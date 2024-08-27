@@ -5,9 +5,37 @@ import { FcGoogle } from "react-icons/fc";
 import { IoEyeOutline } from "react-icons/io5";
 import { RiArrowRightUpLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
+import axios from "axios"; // Import axios for making HTTP requests
 
 const SignUpPage = () => {
-  const [shoPass, setShowPass] = useState(false);
+  const [showPass, setShowPass] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        `https://keek-server.vercel.app/api/influencer/register-email-influencer`, // Update with your actual endpoint
+        formData
+      );
+      console.log(response.data); // Handle success (e.g., show a message or redirect)
+    } catch (error) {
+      console.error("There was an error registering the user:", error.response);
+      // Handle error (e.g., show an error message)
+    }
+  };
+
   return (
     <div>
       <div className="ml-11 mt-[19px]">
@@ -40,52 +68,56 @@ const SignUpPage = () => {
           <hr className="w-1/2 text-[#B1B2B2]" />
         </div>
         <div>
-          <form action="" onSubmit={(e) => e.preventDefault()}>
+          <form onSubmit={handleSubmit}>
             <div className="mb-5">
-              <label htmlFor="" className="block">
+              <label htmlFor="name" className="block">
                 Name<span className="text-[#06F]">*</span>
               </label>
               <input
                 className="border h-[44px] border-[#363939] px-5 py-3 w-[500px] rounded-lg"
                 type="text"
-                name=""
-                id=""
-                placeholder="John.doe@gmail.com"
+                name="name"
+                id="name"
+                placeholder="John Doe"
+                value={formData.name}
+                onChange={handleChange}
                 required
               />
             </div>
             <div className="mb-5">
-              <label htmlFor="" className="block">
+              <label htmlFor="email" className="block">
                 Email<span className="text-[#06F]">*</span>
               </label>
               <input
                 className="border h-[44px]  border-[#363939] px-5 py-3 w-[500px] rounded-lg"
                 type="email"
-                name=""
-                id=""
+                name="email"
+                id="email"
                 placeholder="John.doe@gmail.com"
+                value={formData.email}
+                onChange={handleChange}
                 required
               />
             </div>
             <div className="relative">
-              <label htmlFor="" className="block">
+              <label htmlFor="password" className="block">
                 Password<span className="text-[#06F]">*</span>
               </label>
               <input
                 className="border h-[44px]  border-[#363939] px-5 py-3 w-[500px] rounded-lg"
-                type={`${shoPass ? "text" : "password"}`}
-                name=""
-                id=""
+                type={showPass ? "text" : "password"}
+                name="password"
+                id="password"
                 placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
                 required
               />
               <div
-                onClick={() => {
-                  setShowPass(!shoPass);
-                }}
-                className="absolute top-1/2 right-6 pl-3 flex items-center"
+                onClick={() => setShowPass(!showPass)}
+                className="absolute top-1/2 right-6 pl-3 flex items-center cursor-pointer"
               >
-                {shoPass ? (
+                {showPass ? (
                   <IoEyeOutline className="text-2xl opacity-50" />
                 ) : (
                   <BsEyeSlash className="text-2xl opacity-50" />
@@ -98,7 +130,7 @@ const SignUpPage = () => {
             <div className="mb-[12px]">
               <input
                 type="checkbox"
-                name=""
+                name="terms"
                 id="term"
                 className="mr-2"
                 required
@@ -128,7 +160,7 @@ const SignUpPage = () => {
           </div>
           <div className="text-center">
             Want to Sign up as a creator? &nbsp;
-            <a href="https://keek-login.vercel.app/">
+            <a href="https://keek-client.vercel.app/">
               <span className="text-[#06F]">
                 Brand page
                 <RiArrowRightUpLine className="inline-block text-lg text-[#06F]" />

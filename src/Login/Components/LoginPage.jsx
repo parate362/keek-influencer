@@ -4,9 +4,36 @@ import { FaMobileAlt } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { IoEyeOutline } from "react-icons/io5";
 import { RiArrowRightUpLine } from "react-icons/ri";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+
 const LoginPage = () => {
   const [shoPass, setShowPass] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(`https://keek-server.vercel.app/api/influencer/login-email-influencer`, {
+        email,
+        password,
+      });
+
+      if (response.data.success) {
+        // Store the token in local storage or cookies
+        localStorage.setItem("token", response.data.user.token);
+        
+        // Navigate to the dashboard or home page
+        navigate("/dashboard"); // Adjust the path as per your app structure
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "An error occurred");
+    }
+  };
+
   return (
     <div>
       <div className="mx-11 mt-[19px]">
@@ -35,35 +62,37 @@ const LoginPage = () => {
           </Link>
         </div>
         <div className="flex items-center mb-[17.5px]">
-          <hr className="w-1/2 text-[#B1B2B2] " />
+          <hr className="w-1/2 text-[#B1B2B2]" />
           <span className="px-6 text-sm text-[#B1B2B2]">OR</span>
           <hr className="w-1/2 text-[#B1B2B2]" />
         </div>
         <div>
-          <form action="" onSubmit={(e) => e.preventDefault()}>
+          <form onSubmit={handleSubmit}>
             <div className="mb-[17.5px]">
-              <label htmlFor="" className="block">
+              <label htmlFor="email" className="block">
                 Email<span className="text-[#06F]">*</span>
               </label>
               <input
                 className="border h-[44px] border-[#363939] px-5 py-3 w-[500px] rounded-lg"
                 type="email"
-                name=""
-                id=""
+                id="email"
                 placeholder="John.doe@gmail.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
             <div className="relative">
-              <label htmlFor="" className="block">
+              <label htmlFor="password" className="block">
                 Password<span className="text-[#06F]">*</span>
               </label>
               <input
                 className="border h-[44px] border-[#363939] px-5 py-3 w-[500px] rounded-lg"
-                type={`${shoPass ? "text" : "password"}`}
-                name=""
-                id=""
+                type={shoPass ? "text" : "password"}
+                id="password"
                 placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
               <div
@@ -79,6 +108,7 @@ const LoginPage = () => {
                 )}
               </div>
             </div>
+            {error && <p className="text-red-500 mt-2">{error}</p>}
             <div className="text-[#06F] text-end mt-2 mb-[29px]">
               <Link to="/forgotpass">Forget password?</Link>
             </div>
